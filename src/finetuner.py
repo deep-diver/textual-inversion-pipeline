@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow import keras
 from utils import get_pos_ids, sample_from_encoder_outputs, get_timestep_embedding
 
@@ -19,7 +20,7 @@ class StableDiffusionFineTuner(keras.Model):
             batch_dim = tf.shape(latents)[0]
 
             timesteps = tf.random.uniform(
-                 (batch_dim,), minval=0, maxval=noise_scheduler.train_timesteps, dtype=tf.int64
+                 (batch_dim,), minval=0, maxval=self.noise_scheduler.train_timesteps, dtype=tf.int64
             )
 
             noisy_latents = self.noise_scheduler.add_noise(latents, noise, timesteps)

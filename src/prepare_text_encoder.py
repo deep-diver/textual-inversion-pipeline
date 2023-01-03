@@ -1,10 +1,12 @@
-
+import keras_cv
 from keras_cv import layers as cv_layers
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
-def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="dog")
+import utils
+
+def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="dog"):
     # Have to get 1-index because `encode` adds start of text and end of text tokens
     tokenized_initializer = stable_diffusion.tokenizer.encode(tokenized_initializer_token)[1]
     #new_weights = stable_diffusion.text_encoder.embedding.token_embedding(
@@ -34,9 +36,9 @@ def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="dog")
     )
     # More layers[2] hacks
     for index, layer in enumerate(stable_diffusion.text_encoder.layers):
-    if index == 2:
+      if index == 2:
         continue
-    new_encoder.layers[index].set_weights(layer.get_weights())
+      new_encoder.layers[index].set_weights(layer.get_weights())
 
 
     new_encoder.layers[2].token_embedding.set_weights([new_weights])

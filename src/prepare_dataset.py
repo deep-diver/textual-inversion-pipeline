@@ -7,8 +7,8 @@ from keras_cv import layers as cv_layers
 import utils
 
 def prepare_images(folder, extension):
-    files = glob.blog(f"{folder}/*.{extension")
-    files = [tf.keras.utils.get_file(origin=f) for f in files]
+    files = glob.glob(f"{folder}/*.{extension}")
+#     files = [f"{folder}/{f}.{extension}" for f in files]
 
     resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
     images = [keras.utils.load_img(img) for img in files]

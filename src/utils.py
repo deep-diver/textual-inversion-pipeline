@@ -1,3 +1,6 @@
+import math
+import tensorflow as tf
+
 MAX_PROMPT_LENGTH = 77
 
 def traverse_layers(layer):
