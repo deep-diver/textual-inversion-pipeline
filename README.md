@@ -1,3 +1,3 @@
 # textual-inversion-sd
 
-![](https://iili.io/HAxemV2.png)
+![](https://freeimage.host/i/HATANDb)
