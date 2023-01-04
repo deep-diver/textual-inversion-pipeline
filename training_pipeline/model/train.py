@@ -1,58 +1,63 @@
 from typing import List
 
 import tensorflow as tf
-import tensorflow_transform as tft
-from tfx.components.trainer.fn_args_utils import DataAccessor, FnArgs
-from tfx_bsl.tfxio import dataset_options
+from tensorflow import keras
 
-from .common import IMAGE_KEY, LABEL_KEY, NUM_LABELS
-from .hyperparams import EPOCHS, EVAL_BATCH_SIZE, TRAIN_BATCH_SIZE
-from .signatures import (
-    model_exporter,
-    tf_examples_serving_signature,
-    transform_features_signature,
-)
-from .unet import build_model
-from .utils import transformed_name
+from keras_cv.models import StableDiffusion
+from keras_cv.models.stable_diffusion import NoiseScheduler
+
+from utils import traverse_layers
+from prepare_text_encoder import prepare_text_encoder
+from prepare_dataset import prepare_image_dataset, prepare_text_dataset
+from finetuner import StableDiffusionFineTuner
+
+from tfx.components.trainer.fn_args_utils import FnArgs
 
 def run_fn(fn_args: FnArgs):
-    tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
+    EPOCHS=50
 
-    train_dataset = _input_fn(
-        fn_args.train_files,
-        fn_args.data_accessor,
-        tf_transform_output,
-        is_train=True,
-        batch_size=TRAIN_BATCH_SIZE,
+    stable_diffusion = StableDiffusion()
+
+    image_dataset = prepare_image_dataset("./data")
+    text_dataset = prepare_text_dataset(stable_diffusion)
+
+    train_ds = tf.data.Dataset.zip((image_dataset, text_dataset))
+    train_ds = train_ds.batch(1).repeat(5).shuffle(20, reshuffle_each_iteration=True)
+
+    new_text_encoder = prepare_text_encoder(stable_diffusion)
+
+    stable_diffusion.diffusion_model.trainable = False
+    stable_diffusion.decoder.trainable = False
+    stable_diffusion.text_encoder.trainable = True
+
+    stable_diffusion.text_encoder.layers[2].trainable = True
+
+    for layer in traverse_layers(stable_diffusion.text_encoder):
+        if isinstance(layer, keras.layers.Embedding) or "clip_embedding" in layer.name:
+            layer.trainable = True
+        else:
+            layer.trainable = False
+
+    new_text_encoder.layers[2].position_embedding.trainable=False
+
+    training_image_encoder = keras.Model(stable_diffusion.image_encoder.input, stable_diffusion.image_encoder.layers[-2].output)
+
+    noise_scheduler = NoiseScheduler(
+        beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", train_timesteps=1000
+    )
+    trainer = StableDiffusionFineTuner(stable_diffusion, noise_scheduler, training_image_encoder, name="trainer")
+
+    learning_rate = keras.optimizers.schedules.CosineDecay(initial_learning_rate=1e-4, decay_steps=train_ds.cardinality()*EPOCHS)
+    optimizer = keras.optimizers.Adam(
+        weight_decay=0.004, learning_rate=learning_rate, epsilon=1e-8, global_clipnorm=10
     )
 
-    eval_dataset = _input_fn(
-        fn_args.eval_files,
-        fn_args.data_accessor,
-        tf_transform_output,
-        is_train=False,
-        batch_size=EVAL_BATCH_SIZE,
-    )
-    model = build_model(
-        transformed_name(IMAGE_KEY), transformed_name(LABEL_KEY), NUM_LABELS
+    trainer.compile(
+        optimizer=optimizer,
+        loss=keras.losses.MeanSquaredError(reduction="none"),
     )
 
-    model.fit(
-        train_dataset,
-        steps_per_epoch=fn_args.train_steps,
-        validation_data=eval_dataset,
-        validation_steps=fn_args.eval_steps,
+    trainer.fit(
+        train_ds,
         epochs=EPOCHS,
-    )
-
-    model.save(
-        fn_args.serving_model_dir,
-        save_format="tf",
-        signatures={
-            "serving_default": model_exporter(model),
-            "transform_features": transform_features_signature(
-                model, tf_transform_output
-            ),
-            "from_examples": tf_examples_serving_signature(model, tf_transform_output),
-        },
     )

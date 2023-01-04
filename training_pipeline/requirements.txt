@@ -1,4 +1,6 @@
 pytest
-tfx
+tfx==1.12.0
+tensorflow==2.11.0
+keras_cv==0.4.0
 kfp
 huggingface-hub
