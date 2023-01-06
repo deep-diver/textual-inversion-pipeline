@@ -61,9 +61,9 @@ GCP_AI_PLATFORM_TRAINING_ARGS = {
 
 HF_PUSHER_ARGS = {
     "username": "chansung",
-    "access_token": "$HF_ACCESS_TOKEN",
+    "access_token": "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",
     "repo_name": PIPELINE_NAME,
     "space_config": {
-        "app_path": "apps.gradio.semantic_segmentation",
+        "app_path": "apps.gradio.textual_inversion",
     },
 }
