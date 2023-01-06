@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 from keras_cv import layers as cv_layers
 
-import utils
+from .utils import MAX_PROMPT_LENGTH
 
 def prepare_images(folder, extension):
     files = glob.glob(f"{folder}/*.{extension}")
@@ -67,7 +67,7 @@ def prepare_embeddings(stable_diffusion, placeholder_token):
 def pad_embedding(stable_diffusion, embedding):
     return embedding + (
         [stable_diffusion.tokenizer.end_of_text]
-        * (utils.MAX_PROMPT_LENGTH - len(embedding))
+        * (MAX_PROMPT_LENGTH - len(embedding))
     )
 
 def prepare_image_dataset(folder, extension="jpeg"):

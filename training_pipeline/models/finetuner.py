@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from utils import get_pos_ids, sample_from_encoder_outputs, get_timestep_embedding
+from .utils import get_pos_ids, sample_from_encoder_outputs, get_timestep_embedding
 
 class StableDiffusionFineTuner(keras.Model):
     def __init__(self, stable_diffusion, noise_scheduler, training_image_encoder, **kwargs):
