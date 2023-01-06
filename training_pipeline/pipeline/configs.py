@@ -17,6 +17,9 @@ except ImportError:
 
 GOOGLE_CLOUD_REGION = "us-central1"
 
+DATA_PATH = "tfrecords"
+SCHEMA_PATH = "pipeline/schema.pbtxt" # GCS path is also allowed
+
 GCS_BUCKET_NAME = GOOGLE_CLOUD_PROJECT + "-complete-mlops"
 PIPELINE_IMAGE = f"gcr.io/{GOOGLE_CLOUD_PROJECT}/{PIPELINE_NAME}"
 
@@ -24,6 +27,7 @@ OUTPUT_DIR = os.path.join("gs://", GCS_BUCKET_NAME)
 PIPELINE_ROOT = os.path.join(OUTPUT_DIR, "tfx_pipeline_output", PIPELINE_NAME)
 
 TRAINING_FN = "models.train.run_fn"
+PREPROCESSING_FN = "dataprocessings.preprocessing.preprocessing_fn"
 
 GRADIO_APP_PATH = "apps.gradio.img_classifier"
 MODEL_HUB_REPO_PLACEHOLDER = "$MODEL_REPO_ID"
