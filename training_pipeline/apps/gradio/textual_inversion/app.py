@@ -12,14 +12,16 @@ import keras_cv
 from constants import css, examples, img_height, img_width, num_images_to_gen
 from share_btn import community_icon_html, loading_icon_html, share_js
 
-MODEL_CKPT = "$MODEL_REPO_ID@$MODEL_VERSION"
+from huggingface_hub import from_pretrained_keras
+
+MODEL_CKPT = "chansung/textual-inversion-pipeline@v1673026791"
 MODEL = from_pretrained_keras(MODEL_CKPT)
 
 model = keras_cv.models.StableDiffusion(
     img_width=img_width, img_height=img_height, jit_compile=True
 )
-model.text_encoder = MODEL
-model.text_encoder.compile(jit_compile=True)
+model._text_encoder = MODEL
+model._text_encoder.compile(jit_compile=True)
 
 # Warm-up the model.
 _ = model.text_to_image("Teddy bear", batch_size=num_images_to_gen)
