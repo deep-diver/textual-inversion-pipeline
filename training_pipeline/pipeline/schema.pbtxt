@@ -1,0 +1,25 @@
+# find which messages are supported from the official TensorFlow Metadata repository
+# at https://github.com/tensorflow/metadata/blob/master/tensorflow_metadata/proto/v0/schema.proto
+#
+# For starters, you can find some beginner friendly information in TFX official tutorial
+# at https://www.tensorflow.org/tfx/guide/schemagen
+
+feature {
+  name: "images" 
+  type: FLOAT
+
+  presence {
+    min_fraction: 1.0
+  }
+
+  float_domain {
+    min: 0
+    max: 255
+  }
+
+  shape {
+    dim { size: 512 }
+    dim { size: 512 }
+    dim { size: 3 }
+  }
+}
