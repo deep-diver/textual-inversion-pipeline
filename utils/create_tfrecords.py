@@ -37,7 +37,7 @@ def create_tfrecord(image: Image):
     return tf.train.Example(
         features=tf.train.Features(
             feature={
-                "image": _float_feature(image.numpy()),
+                "images": _float_feature(image.numpy()),
             }
         )
     ).SerializeToString()
