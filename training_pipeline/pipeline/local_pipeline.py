@@ -54,6 +54,10 @@ def create_pipeline(
     )
     components.append(trainer)
 
+    hf_pusher_args["model"] = trainer.outputs["model"]
+    hf_pusher = HFPusher(**hf_pusher_args)
+    components.append(hf_pusher)
+
     return pipeline.Pipeline(
         pipeline_name=pipeline_name,
         pipeline_root=pipeline_root,
@@ -61,11 +65,3 @@ def create_pipeline(
         enable_cache=False,
         metadata_connection_config=metadata_connection_config,
     )
-
-"""
-
-
-    hf_pusher_args["model"] = trainer.outputs["model"]
-    hf_pusher = HFPusher(**hf_pusher_args)
-    components.append(hf_pusher)
-"""
