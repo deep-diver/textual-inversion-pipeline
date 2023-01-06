@@ -1,2 +1,4 @@
 .ipynb_checkpoints
 __pycache__
+tfx_pipeline_output
+tfx_metadata
