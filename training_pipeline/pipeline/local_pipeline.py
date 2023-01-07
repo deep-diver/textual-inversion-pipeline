@@ -49,8 +49,6 @@ def create_pipeline(
         run_fn=modules["training_fn"],
         transformed_examples=transform.outputs["transformed_examples"],
         transform_graph=transform.outputs["transform_graph"],
-        train_args=train_args,
-        eval_args=eval_args,
     )
     components.append(trainer)
 
