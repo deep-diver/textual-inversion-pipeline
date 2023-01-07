@@ -1,6 +1,7 @@
 import argparse
 import os
 import glob
+import mimetypes
 
 import numpy as np
 import tensorflow as tf
@@ -8,9 +9,11 @@ from tensorflow import keras
 import tqdm
 from PIL import Image
 
-def load_dataset(directory="training_pipeline/data", extension="jpeg"):
-    files = glob.glob(f"{directory}/*.{extension}")
-    images = [keras.utils.load_img(img) for img in files]
+def load_dataset(directory="training_pipeline/data"):
+    files = glob.glob(f"{directory}/*.*")
+
+    images = [img for img in files if mimetypes.guess_type(img)[0] is not None and "image" in mimetypes.guess_type(img)[0]]
+    images = [keras.utils.load_img(img) for img in images]
 
     return images
 

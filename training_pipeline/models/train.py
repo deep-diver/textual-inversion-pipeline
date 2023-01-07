@@ -10,7 +10,7 @@ from keras_cv import layers as cv_layers
 
 from .utils import traverse_layers
 from .prepare_text_encoder import prepare_text_encoder
-from .prepare_dataset import prepare_image_dataset, prepare_text_dataset
+from .prepare_dataset import prepare_text_dataset
 from .finetuner import StableDiffusionFineTuner
 
 from tfx.components.trainer.fn_args_utils import DataAccessor, FnArgs
