@@ -89,7 +89,7 @@ jobs:
       run: |
         ENABLE_DATAFLOW=${{ env.ENABLE_DATAFLOW }} \
         tfx pipeline compile \
-          --pipeline-path kubeflow_runner.py \
+          --pipeline-path vertex_runner.py \
           --engine vertex
           
     - name: 'Run TFX Training Pipeline'
