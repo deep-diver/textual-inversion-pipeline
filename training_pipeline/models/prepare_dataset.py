@@ -1,4 +1,5 @@
 import glob
+import mimetypes
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -6,11 +7,11 @@ from keras_cv import layers as cv_layers
 
 from .utils import MAX_PROMPT_LENGTH
 
-def prepare_images(folder, extension):
-    files = glob.glob(f"{folder}/*.{extension}")
-#     files = [f"{folder}/{f}.{extension}" for f in files]
+def prepare_images(folder):
+    files = glob.glob(f"{folder}/*.*")
 
     resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
+    images = [img for img in files if mimetypes.guess_type(img)[0] is not None and "image" in mimetypes.guess_type(img)[0]]
     images = [keras.utils.load_img(img) for img in files]
     images = [keras.utils.img_to_array(img) for img in images]
     images = np.array([resize(img) for img in images])
@@ -70,8 +71,8 @@ def pad_embedding(stable_diffusion, embedding):
         * (MAX_PROMPT_LENGTH - len(embedding))
     )
 
-def prepare_image_dataset(folder, extension="jpeg"):
-    images = prepare_images(folder, extension)
+def prepare_image_dataset(folder):
+    images = prepare_images(folder)
     
     image_dataset = tf.data.Dataset.from_tensor_slices(images)
     image_dataset = image_dataset.shuffle(100)
@@ -90,7 +91,7 @@ def prepare_image_dataset(folder, extension="jpeg"):
 
     return image_dataset
 
-def prepare_text_dataset(stable_diffusion, placeholder_token="<benny-the-aussie>"):
+def prepare_text_dataset(stable_diffusion, placeholder_token="<my-funny-cat-token>"):
     embeddings = prepare_embeddings(stable_diffusion, placeholder_token)
 
     embeddings = [np.array(pad_embedding(stable_diffusion, embedding)) for embedding in embeddings]
