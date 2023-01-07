@@ -33,7 +33,7 @@ jobs:
         
     - name: 'Install required Python packages'
       run: |
-        pip install -r requirements.txt
+        pip install -r training_pipeline/requirements.txt
     
     - name: 'Replace GCP Project Strings'
       id: prepare-step
