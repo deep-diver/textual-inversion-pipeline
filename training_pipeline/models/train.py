@@ -46,7 +46,7 @@ def _input_fn(
     return dataset
 
 def run_fn(fn_args: FnArgs):
-    EPOCHS=3
+    EPOCHS=50
 
     stable_diffusion = StableDiffusion()
 

@@ -60,7 +60,7 @@ demoInterface = gr.Interface(
     title="Generate custom images with finetuned embeddings of Stable Diffusion",
     description=description,
     article=article,
-    examples=[["an oil painting of {PLACEHOLDER_TOKEN}", 8], ["gandalf the gray as a {PLACEHOLDER_TOKEN}", 8]],
+    examples=[f"an oil painting of {PLACEHOLDER_TOKEN}", 8], [f"gandalf the gray as a {PLACEHOLDER_TOKEN}", 8]],
     allow_flagging=False,
 )
 
