@@ -3,7 +3,7 @@ import os
 import tfx.extensions.google_cloud_ai_platform.constants as vertex_const
 import tfx.extensions.google_cloud_ai_platform.trainer.executor as vertex_training_const
 
-PIPELINE_NAME = "textual-inversion-pipeline"
+PIPELINE_NAME = $PIPELINE_NAME
 
 try:
     import google.auth  # pylint: disable=g-import-not-at-top  # pytype: disable=import-error
