@@ -25,15 +25,10 @@ class StableDiffusionFineTuner(keras.Model):
 
             noisy_latents = self.noise_scheduler.add_noise(latents, noise, timesteps)
 
-            # TODO(lukewood): figure out exactly what to feed to text encoder?
             encoder_hidden_state = self.stable_diffusion.text_encoder([embeddings, get_pos_ids()])
 
-            # Not 100% certain if this is right
-            # See https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/unet_2d_condition.py (def forward())
-            # I did some more verification and I think this is, in fact, correct
             timestep_embeddings = tf.map_fn(fn=get_timestep_embedding, elems=timesteps, fn_output_signature=tf.float32)
 
-            # Added [] around params
             noise_pred = self.stable_diffusion.diffusion_model(
                 [noisy_latents, timestep_embeddings, encoder_hidden_state]
             )
