@@ -20,8 +20,7 @@ def create_pipeline(
     data_path: Text,
     schema_path: Text,
     modules: Dict[Text, Text],
-    train_args: trainer_pb2.TrainArgs,
-    eval_args: trainer_pb2.EvalArgs,
+    training_custom_args: Optional[Dict[Text, Text]] = None,
     hf_pusher_args: Optional[Dict[Text, Any]],
     metadata_connection_config: Optional[metadata_store_pb2.ConnectionConfig] = None,
 ) -> tfx.dsl.Pipeline:
@@ -49,6 +48,7 @@ def create_pipeline(
         run_fn=modules["training_fn"],
         transformed_examples=transform.outputs["transformed_examples"],
         transform_graph=transform.outputs["transform_graph"],
+        custom_config=training_custom_args,
     )
     components.append(trainer)
 

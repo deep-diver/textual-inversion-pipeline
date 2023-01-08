@@ -22,7 +22,7 @@ def run():
                 "training_fn": configs.TRAINING_FN,
                 "preprocessing_fn": configs.PREPROCESSING_FN,
             },
-            ai_platform_training_args=configs.GCP_AI_PLATFORM_TRAINING_ARGS,
+            training_custom_args=configs.TRAINING_CUSTOM_ARGS,
             hf_pusher_args=configs.HF_PUSHER_ARGS,
         )
     )
