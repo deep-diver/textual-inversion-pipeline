@@ -42,9 +42,10 @@ def prepare_prompts(placeholder_token):
     return object_prompts
 
 def prepare_embeddings(stable_diffusion, placeholder_token):
+    stable_diffusion.tokenizer.add_tokens(placeholder_token)
+    
     object_prompts = prepare_prompts(placeholder_token)
     embeddings = [stable_diffusion.tokenizer.encode(prompt) for prompt in object_prompts]
-    stable_diffusion.tokenizer.add_tokens(placeholder_token)
     return embeddings
 
 def pad_embedding(stable_diffusion, embedding):
