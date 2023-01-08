@@ -57,6 +57,10 @@ GCP_AI_PLATFORM_TRAINING_ARGS = {
         ],
     },
     "use_gpu": True,
+    "hyperparameters": {
+        "epoch": 30,
+        "initialized_target_token": "cat"
+    }
 }
 
 HF_PUSHER_ARGS = {

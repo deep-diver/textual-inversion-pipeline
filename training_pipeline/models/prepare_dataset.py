@@ -5,7 +5,40 @@ import tensorflow as tf
 from tensorflow import keras
 from keras_cv import layers as cv_layers
 
+import tensorflow_transform as tft
+from tfx_bsl.tfxio import dataset_options
+from tfx.components.trainer.fn_args_utils import DataAccessor, FnArgs
+
 from .utils import MAX_PROMPT_LENGTH
+
+def prepare_image_dataset(
+    file_pattern: List[str],
+    data_accessor: DataAccessor,
+    tf_transform_output: tft.TFTransformOutput
+) -> tf.data.Dataset:
+    dataset = data_accessor.tf_dataset_factory(
+        file_pattern,
+        dataset_options.TensorFlowDatasetOptions(
+            batch_size=1, shuffle=False
+        ),        
+        tf_transform_output.transformed_metadata.schema,
+    )
+
+    dataset = dataset.shuffle(50, reshuffle_each_iteration=True)
+    dataset = dataset.map(
+        cv_layers.RandomCropAndResize(
+            target_size=(512, 512),
+            crop_area_factor=(0.8, 1.0),
+            aspect_ratio_factor=(1.0, 1.0),
+        ),
+        num_parallel_calls=tf.data.AUTOTUNE,
+    )
+    dataset = dataset.map(
+        cv_layers.RandomFlip(mode="horizontal"), num_parallel_calls=tf.data.AUTOTUNE,
+    )
+    dataset = dataset.repeat()
+
+    return dataset    
 
 def prepare_prompts(placeholder_token):
     object_prompts = [

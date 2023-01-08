@@ -4,8 +4,8 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
-def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="cat"):
-    tokenized_initializer = stable_diffusion.tokenizer.encode(tokenized_initializer_token)[1]
+def prepare_text_encoder(stable_diffusion, initialized_target_token="cat"):
+    tokenized_initializer = stable_diffusion.tokenizer.encode(initialized_target_token)[1]
 
     new_weights = stable_diffusion.text_encoder.layers[2].token_embedding(
         tf.constant(tokenized_initializer)
