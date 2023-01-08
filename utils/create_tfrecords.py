@@ -21,6 +21,7 @@ def load_dataset(directory="training_pipeline/data"):
 def resize_img(image: tf.Tensor, resize: int) -> tf.Tensor:
     resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
     image = np.array(resize(image))
+    image = image / 127.5 - 1
     return image
 
 
