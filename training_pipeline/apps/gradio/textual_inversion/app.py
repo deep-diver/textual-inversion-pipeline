@@ -24,6 +24,7 @@ model = keras_cv.models.StableDiffusion(
 )
 model._text_encoder = MODEL
 model._text_encoder.compile(jit_compile=True)
+model.tokenizer.add_tokens(PLACEHOLDER_TOKEN)
 
 # Warm-up the model.
 _ = model.text_to_image("Teddy bear", batch_size=num_images_to_gen)
