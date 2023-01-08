@@ -24,7 +24,7 @@ def _input_fn(
     dataset = data_accessor.tf_dataset_factory(
         file_pattern,
         dataset_options.TensorFlowDatasetOptions(
-            batch_size=4, shuffle=False
+            batch_size=1, shuffle=False
         ),        
         tf_transform_output.transformed_metadata.schema,
     )
@@ -59,7 +59,7 @@ def run_fn(fn_args: FnArgs):
     text_dataset = prepare_text_dataset(stable_diffusion)
 
     train_ds = tf.data.Dataset.zip((image_dataset, text_dataset))
-    train_ds = train_ds.batch(1).shuffle(train_ds.cardinality(), reshuffle_each_iteration=True)
+    train_ds = train_ds.shuffle(train_ds.cardinality(), reshuffle_each_iteration=True)
 
     _ = prepare_text_encoder(stable_diffusion)
 
