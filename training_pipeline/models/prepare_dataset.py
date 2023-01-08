@@ -43,14 +43,8 @@ def prepare_prompts(placeholder_token):
 
 def prepare_embeddings(stable_diffusion, placeholder_token):
     object_prompts = prepare_prompts(placeholder_token)
-
     embeddings = [stable_diffusion.tokenizer.encode(prompt) for prompt in object_prompts]
-
     stable_diffusion.tokenizer.add_tokens(placeholder_token)
-    # Create new embeddings based on the old ones.
-
-    # Replace with style_prompts if you'd like to finetune on a style
-    embeddings = [stable_diffusion.tokenizer.encode(prompt) for prompt in object_prompts]
     return embeddings
 
 def pad_embedding(stable_diffusion, embedding):
