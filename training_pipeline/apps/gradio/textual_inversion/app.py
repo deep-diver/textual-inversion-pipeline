@@ -14,7 +14,7 @@ from share_btn import community_icon_html, loading_icon_html, share_js
 
 from huggingface_hub import from_pretrained_keras
 
-PLACEHOLDER_TOKEN="<my-funny-cat-token>"
+PLACEHOLDER_TOKEN="$PLACEHOLDER_TOKEN"
 
 MODEL_CKPT = "$MODEL_REPO_ID@$MODEL_VERSION"
 MODEL = from_pretrained_keras(MODEL_CKPT)

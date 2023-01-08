@@ -29,13 +29,11 @@ PIPELINE_ROOT = os.path.join(OUTPUT_DIR, "tfx_pipeline_output", PIPELINE_NAME)
 TRAINING_FN = "models.train.run_fn"
 PREPROCESSING_FN = "dataprocessings.preprocessing.preprocessing_fn"
 
-GRADIO_APP_PATH = "apps.gradio.img_classifier"
-MODEL_HUB_REPO_PLACEHOLDER = "$MODEL_REPO_ID"
-MODEL_HUB_URL_PLACEHOLDER = "$MODEL_REPO_URL"
-MODEL_VERSION_PLACEHOLDER = "$MODEL_VERSION"
+TRAINING_EPOCH = 1
+INITIALIZED_TARGET_TOKEN = "cat"
+PLACEHOLDER_TOKEN = "<my-funny-cat-token>"
 
-TRAIN_NUM_STEPS = 160
-EVAL_NUM_STEPS = 4
+GRADIO_APP_PATH = "apps.gradio.textual_inversion"
 
 TRAINING_CUSTOM_ARGS = {
     vertex_const.ENABLE_VERTEX_KEY: True,
@@ -58,8 +56,9 @@ TRAINING_CUSTOM_ARGS = {
     },
     "use_gpu": True,
     "hyperparameters": {
-        "epoch": 1,
-        "initialized_target_token": "cat"
+        "epoch": TRAINING_EPOCH,
+        "initialized_target_token": INITIALIZED_TARGET_TOKEN,
+        "placeholder_token": PLACEHOLDER_TOKEN
     }
 }
 
@@ -68,6 +67,9 @@ HF_PUSHER_ARGS = {
     "access_token": "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",
     "repo_name": PIPELINE_NAME,
     "space_config": {
-        "app_path": "apps.gradio.textual_inversion",
+        "app_path": GRADIO_APP_PATH,
+        "additional_replacements": {
+            "$PLACEHOLDER_TOKEN": PLACEHOLDER_TOKEN
+        }
     },
 }
