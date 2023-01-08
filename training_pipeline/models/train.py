@@ -59,7 +59,7 @@ def run_fn(fn_args: FnArgs):
     text_dataset = prepare_text_dataset(stable_diffusion)
 
     train_ds = tf.data.Dataset.zip((image_dataset, text_dataset))
-    train_ds = train_ds.shuffle(train_ds.cardinality(), reshuffle_each_iteration=True)
+    train_ds = train_ds.repeat(10).shuffle(train_ds.cardinality(), reshuffle_each_iteration=True)
 
     _ = prepare_text_encoder(stable_diffusion)
 
