@@ -7,18 +7,6 @@ from keras_cv import layers as cv_layers
 
 from .utils import MAX_PROMPT_LENGTH
 
-def prepare_images(folder):
-    files = glob.glob(f"{folder}/*.*")
-
-    resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
-    images = [img for img in files if mimetypes.guess_type(img)[0] is not None and "image" in mimetypes.guess_type(img)[0]]
-    images = [keras.utils.load_img(img) for img in files]
-    images = [keras.utils.img_to_array(img) for img in images]
-    images = np.array([resize(img) for img in images])
-    images = images / 127.5 - 1
-
-    return images
-
 def prepare_prompts(placeholder_token):
     object_prompts = [
         "a photo of a {}",
@@ -71,30 +59,10 @@ def pad_embedding(stable_diffusion, embedding):
         * (MAX_PROMPT_LENGTH - len(embedding))
     )
 
-def prepare_image_dataset(folder):
-    images = prepare_images(folder)
-    
-    image_dataset = tf.data.Dataset.from_tensor_slices(images)
-    image_dataset = image_dataset.shuffle(100)
-    image_dataset = image_dataset.map(
-        cv_layers.RandomCropAndResize(
-            target_size=(512, 512),
-            crop_area_factor=(0.8, 1.0),
-            aspect_ratio_factor=(1.0, 1.0),
-        ),
-        num_parallel_calls=tf.data.AUTOTUNE,
-    )
-    image_dataset = image_dataset.map(
-        cv_layers.RandomFlip(mode="horizontal"), num_parallel_calls=tf.data.AUTOTUNE,
-    )
-    image_dataset = image_dataset.repeat()
-
-    return image_dataset
-
 def prepare_text_dataset(stable_diffusion, placeholder_token="<my-funny-cat-token>"):
     embeddings = prepare_embeddings(stable_diffusion, placeholder_token)
-
     embeddings = [np.array(pad_embedding(stable_diffusion, embedding)) for embedding in embeddings]
     text_dataset = tf.data.Dataset.from_tensor_slices(embeddings)
-
+    text_dataset = text_dataset.shuffle(100, reshuffle_each_iteration=True)
+    text_dataset.repeat(5)
     return text_dataset
