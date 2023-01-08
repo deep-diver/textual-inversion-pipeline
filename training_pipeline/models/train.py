@@ -46,7 +46,7 @@ def _input_fn(
     return dataset
 
 def run_fn(fn_args: FnArgs):
-    EPOCHS=50
+    EPOCHS=30
 
     stable_diffusion = StableDiffusion()
 
@@ -61,7 +61,7 @@ def run_fn(fn_args: FnArgs):
     train_ds = tf.data.Dataset.zip((image_dataset, text_dataset))
     train_ds = train_ds.repeat(5).shuffle(20, reshuffle_each_iteration=True)
 
-    new_text_encoder = prepare_text_encoder(stable_diffusion)
+    _ = prepare_text_encoder(stable_diffusion)
 
     stable_diffusion.diffusion_model.trainable = False
     stable_diffusion.decoder.trainable = False
@@ -75,7 +75,7 @@ def run_fn(fn_args: FnArgs):
         else:
             layer.trainable = False
 
-    new_text_encoder.layers[2].position_embedding.trainable=False
+    stable_diffusion.text_encoder.layers[2].position_embedding.trainable=False
 
     training_image_encoder = keras.Model(stable_diffusion.image_encoder.input, stable_diffusion.image_encoder.layers[-2].output)
     training_image_encoder.get_layer(index=0)._name = "images"
