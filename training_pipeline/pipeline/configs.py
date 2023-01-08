@@ -58,7 +58,7 @@ TRAINING_CUSTOM_ARGS = {
     },
     "use_gpu": True,
     "hyperparameters": {
-        "epoch": 30,
+        "epoch": 1,
         "initialized_target_token": "cat"
     }
 }
