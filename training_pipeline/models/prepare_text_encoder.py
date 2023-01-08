@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
-def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="dog"):
+def prepare_text_encoder(stable_diffusion, tokenized_initializer_token="cat"):
     # Have to get 1-index because `encode` adds start of text and end of text tokens
     tokenized_initializer = stable_diffusion.tokenizer.encode(tokenized_initializer_token)[1]
     #new_weights = stable_diffusion.text_encoder.embedding.token_embedding(
