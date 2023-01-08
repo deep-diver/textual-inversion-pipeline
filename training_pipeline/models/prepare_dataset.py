@@ -1,3 +1,5 @@
+from typing import List
+
 import glob
 import mimetypes
 import numpy as np
