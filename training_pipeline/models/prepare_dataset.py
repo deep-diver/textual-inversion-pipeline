@@ -14,9 +14,9 @@ from tfx.components.trainer.fn_args_utils import DataAccessor, FnArgs
 from .utils import MAX_PROMPT_LENGTH
 
 def prepare_image_dataset(
-    file_pattern: List[str],
-    data_accessor: DataAccessor,
-    tf_transform_output: tft.TFTransformOutput
+    file_pattern,
+    data_accessor,
+    tf_transform_output
 ) -> tf.data.Dataset:
     dataset = data_accessor.tf_dataset_factory(
         file_pattern,
