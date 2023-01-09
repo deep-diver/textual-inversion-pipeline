@@ -1,4 +1,4 @@
-FROM tensorflow/tfx:1.12.0
+FROM tensorflow/tfx:1.10.0
 
 WORKDIR /pipeline
 COPY ./ ./
