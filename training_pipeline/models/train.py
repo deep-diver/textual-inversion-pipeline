@@ -40,7 +40,7 @@ def get_imenc_and_scheduler(stable_diffusion):
 
     return image_encoder, noise_scheduler
 
-def get_optimizer():
+def get_optimizer(train_ds, epochs):
     learning_rate = keras.optimizers.schedules.CosineDecay(
         initial_learning_rate=1e-4, 
         decay_steps=train_ds.cardinality()*EPOCHS)
@@ -76,7 +76,7 @@ def run_fn(fn_args: FnArgs):
     trainer = StableDiffusionFineTuner(stable_diffusion, scheduler, img_encoder, name="trainer")
 
     trainer.compile(
-        optimizer=get_optimizer(),
+        optimizer=get_optimizer(train_ds, epochs),
         loss=keras.losses.MeanSquaredError(reduction="none"),
     )
     trainer.fit(
