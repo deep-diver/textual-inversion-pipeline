@@ -44,7 +44,7 @@ jobs:
     - name: 'Replace GCP Project in config.py'
       working-directory: 'training_pipeline'
       run: |
-        sed -i 's/gcp-ml-172005/${{ github.event.inputs.gcpProject }}/g' pipeline/configs.py
+        sed -i 's/gcp-ml-172005/${{ github.event.inputs.gcpProject }}/g' configs.py
     
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
@@ -67,9 +67,9 @@ jobs:
         GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         HF_ACCESS_TOKEN: ${{ secrets.HF_ACCESS_TOKEN }}
       run: |
-        envsubst '$GH_ACCESS_TOKEN, $HF_ACCESS_TOKEN, $PIPELINE_NAME' < pipeline/configs.py > pipeline/configs_tmp.py
-        mv pipeline/configs_tmp.py pipeline/configs.py
-        cat pipeline/configs.py
+        envsubst '$GH_ACCESS_TOKEN, $HF_ACCESS_TOKEN, $PIPELINE_NAME' < configs.py > configs_tmp.py
+        mv configs_tmp.py configs.py
+        cat configs.py
 
     - name: 'Create TFX Training Pipeline'
       working-directory: 'training_pipeline'
