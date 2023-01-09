@@ -308,7 +308,7 @@ def deploy_model_for_hf_hub(
             model_repo_id=model_repo_id,
             model_repo_url=model_repo_url,
             model_version=model_version,
-            additional_replacements=space_config["replacements"]
+            additional_replacements=space_config["additional_replacements"]
         )
 
         # step 2-4
