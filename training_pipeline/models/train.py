@@ -43,7 +43,7 @@ def get_imenc_and_scheduler(stable_diffusion):
 def get_optimizer(train_ds, epochs):
     learning_rate = keras.optimizers.schedules.CosineDecay(
         initial_learning_rate=1e-4, 
-        decay_steps=train_ds.cardinality()*EPOCHS)
+        decay_steps=train_ds.cardinality()*epochs)
 
     optimizer = keras.optimizers.Adam(
         weight_decay=0.004, 
