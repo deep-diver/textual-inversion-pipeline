@@ -3,9 +3,7 @@ from absl import logging
 
 from tfx import v1 as tfx
 from tfx.orchestration.data_types import RuntimeParameter
-from pipeline import local_pipeline
-
-import configs
+from pipeline import local_pipeline, configs
 
 OUTPUT_DIR = "."
 

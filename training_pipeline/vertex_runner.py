@@ -3,8 +3,7 @@ from tfx import v1 as tfx
 from tfx.orchestration.kubeflow.v2 import kubeflow_v2_dag_runner as runner
 from tfx.proto import trainer_pb2
 
-from pipeline import vertex_pipeline
-import configs
+from pipeline import vertex_pipeline, configs
 
 def run():
     runner_config = runner.KubeflowV2DagRunnerConfig(default_image=configs.PIPELINE_IMAGE)
