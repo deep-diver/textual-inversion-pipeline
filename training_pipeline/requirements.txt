@@ -1,5 +1,5 @@
 pytest
-tfx==1.11
+tfx==1.12
 tensorflow==2.11
 keras_cv==0.4.0
 tensorflow_datasets==4.8.1
