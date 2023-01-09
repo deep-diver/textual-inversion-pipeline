@@ -26,7 +26,7 @@ def create_pipeline(
     schema_path: Text,
     modules: Dict[Text, Text],
     metadata_connection_config: Optional[metadata_store_pb2.ConnectionConfig] = None,
-    ai_platform_training_args: Optional[Dict[Text, Text]] = None,
+    training_custom_args: Optional[Dict[Text, Text]] = None,
     hf_pusher_args: Optional[Dict[Text, Any]] = None,
 ) -> tfx.dsl.Pipeline:
     components = []
@@ -49,17 +49,15 @@ def create_pipeline(
     )
     components.append(transform)    
 
-    # Training.
     trainer_args = {
         "run_fn": modules["training_fn"],
         "transformed_examples": transform.outputs["transformed_examples"],
         "transform_graph": transform.outputs["transform_graph"],
-        "custom_config": ai_platform_training_args,
+        "custom_config": training_custom_args,
     }
     trainer = VertexTrainer(**trainer_args)
     components.append(trainer)
 
-    # Push the blesses model to HF hub and deploy a demo app on Hugging Face Spaces.
     hf_pusher_args["model"] = trainer.outputs["model"]
     hf_pusher = HFPusher(**hf_pusher_args)
     components.append(hf_pusher)

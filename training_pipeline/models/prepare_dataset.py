@@ -1,22 +1,46 @@
+from typing import List
+
 import glob
+import mimetypes
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from keras_cv import layers as cv_layers
 
+import tensorflow_transform as tft
+from tfx_bsl.tfxio import dataset_options
+from tfx.components.trainer.fn_args_utils import DataAccessor, FnArgs
+
 from .utils import MAX_PROMPT_LENGTH
 
-def prepare_images(folder, extension):
-    files = glob.glob(f"{folder}/*.{extension}")
-#     files = [f"{folder}/{f}.{extension}" for f in files]
+def prepare_image_dataset(
+    file_pattern,
+    data_accessor,
+    tf_transform_output
+) -> tf.data.Dataset:
+    dataset = data_accessor.tf_dataset_factory(
+        file_pattern,
+        dataset_options.TensorFlowDatasetOptions(
+            batch_size=1, shuffle=False
+        ),        
+        tf_transform_output.transformed_metadata.schema,
+    )
 
-    resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
-    images = [keras.utils.load_img(img) for img in files]
-    images = [keras.utils.img_to_array(img) for img in images]
-    images = np.array([resize(img) for img in images])
-    images = images / 127.5 - 1
+    dataset = dataset.shuffle(50, reshuffle_each_iteration=True)
+    dataset = dataset.map(
+        cv_layers.RandomCropAndResize(
+            target_size=(512, 512),
+            crop_area_factor=(0.8, 1.0),
+            aspect_ratio_factor=(1.0, 1.0),
+        ),
+        num_parallel_calls=tf.data.AUTOTUNE,
+    )
+    dataset = dataset.map(
+        cv_layers.RandomFlip(mode="horizontal"), num_parallel_calls=tf.data.AUTOTUNE,
+    )
+    dataset = dataset.repeat()
 
-    return images
+    return dataset    
 
 def prepare_prompts(placeholder_token):
     object_prompts = [
@@ -53,14 +77,9 @@ def prepare_prompts(placeholder_token):
     return object_prompts
 
 def prepare_embeddings(stable_diffusion, placeholder_token):
-    object_prompts = prepare_prompts(placeholder_token)
-
-    embeddings = [stable_diffusion.tokenizer.encode(prompt) for prompt in object_prompts]
-
     stable_diffusion.tokenizer.add_tokens(placeholder_token)
-    # Create new embeddings based on the old ones.
-
-    # Replace with style_prompts if you'd like to finetune on a style
+    
+    object_prompts = prepare_prompts(placeholder_token)
     embeddings = [stable_diffusion.tokenizer.encode(prompt) for prompt in object_prompts]
     return embeddings
 
@@ -70,30 +89,10 @@ def pad_embedding(stable_diffusion, embedding):
         * (MAX_PROMPT_LENGTH - len(embedding))
     )
 
-def prepare_image_dataset(folder, extension="jpeg"):
-    images = prepare_images(folder, extension)
-    
-    image_dataset = tf.data.Dataset.from_tensor_slices(images)
-    image_dataset = image_dataset.shuffle(100)
-    image_dataset = image_dataset.map(
-        cv_layers.RandomCropAndResize(
-            target_size=(512, 512),
-            crop_area_factor=(0.8, 1.0),
-            aspect_ratio_factor=(1.0, 1.0),
-        ),
-        num_parallel_calls=tf.data.AUTOTUNE,
-    )
-    image_dataset = image_dataset.map(
-        cv_layers.RandomFlip(mode="horizontal"), num_parallel_calls=tf.data.AUTOTUNE,
-    )
-    image_dataset = image_dataset.repeat()
-
-    return image_dataset
-
-def prepare_text_dataset(stable_diffusion, placeholder_token="<benny-the-aussie>"):
+def prepare_text_dataset(stable_diffusion, placeholder_token="<my-funny-cat-token>"):
     embeddings = prepare_embeddings(stable_diffusion, placeholder_token)
-
     embeddings = [np.array(pad_embedding(stable_diffusion, embedding)) for embedding in embeddings]
     text_dataset = tf.data.Dataset.from_tensor_slices(embeddings)
-
+    text_dataset = text_dataset.shuffle(100, reshuffle_each_iteration=True)
+    text_dataset.repeat(5)
     return text_dataset

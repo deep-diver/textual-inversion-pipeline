@@ -3,8 +3,7 @@ from absl import logging
 
 from tfx import v1 as tfx
 from tfx.orchestration.data_types import RuntimeParameter
-from pipeline import configs
-from pipeline import local_pipeline
+from pipeline import local_pipeline, configs
 
 OUTPUT_DIR = "."
 
@@ -26,8 +25,7 @@ def run():
                 "training_fn": configs.TRAINING_FN,
                 "preprocessing_fn": configs.PREPROCESSING_FN,
             },
-            train_args=tfx.proto.TrainArgs(num_steps=configs.TRAIN_NUM_STEPS),
-            eval_args=tfx.proto.EvalArgs(num_steps=configs.EVAL_NUM_STEPS),
+            training_custom_args=configs.TRAINING_CUSTOM_ARGS,
             hf_pusher_args=configs.HF_PUSHER_ARGS,
             metadata_connection_config=tfx.orchestration.metadata.sqlite_metadata_connection_config(
                 METADATA_PATH

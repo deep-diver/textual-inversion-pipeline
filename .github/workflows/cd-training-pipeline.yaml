@@ -33,7 +33,7 @@ jobs:
         
     - name: 'Install required Python packages'
       run: |
-        pip install -r requirements.txt
+        pip install -r training_pipeline/requirements.txt
     
     - name: 'Replace GCP Project Strings'
       id: prepare-step
@@ -89,7 +89,7 @@ jobs:
       run: |
         ENABLE_DATAFLOW=${{ env.ENABLE_DATAFLOW }} \
         tfx pipeline compile \
-          --pipeline-path kubeflow_runner.py \
+          --pipeline-path vertex_runner.py \
           --engine vertex
           
     - name: 'Run TFX Training Pipeline'

@@ -3,7 +3,7 @@ import os
 import tfx.extensions.google_cloud_ai_platform.constants as vertex_const
 import tfx.extensions.google_cloud_ai_platform.trainer.executor as vertex_training_const
 
-PIPELINE_NAME = $PIPELINE_NAME
+PIPELINE_NAME = "$PIPELINE_NAME"
 
 try:
     import google.auth  # pylint: disable=g-import-not-at-top  # pytype: disable=import-error
@@ -29,15 +29,13 @@ PIPELINE_ROOT = os.path.join(OUTPUT_DIR, "tfx_pipeline_output", PIPELINE_NAME)
 TRAINING_FN = "models.train.run_fn"
 PREPROCESSING_FN = "dataprocessings.preprocessing.preprocessing_fn"
 
-GRADIO_APP_PATH = "apps.gradio.img_classifier"
-MODEL_HUB_REPO_PLACEHOLDER = "$MODEL_REPO_ID"
-MODEL_HUB_URL_PLACEHOLDER = "$MODEL_REPO_URL"
-MODEL_VERSION_PLACEHOLDER = "$MODEL_VERSION"
+TRAINING_EPOCH = 50
+INITIALIZED_TARGET_TOKEN = "cat"
+PLACEHOLDER_TOKEN = "<my-funny-cat-token>"
 
-TRAIN_NUM_STEPS = 160
-EVAL_NUM_STEPS = 4
+GRADIO_APP_PATH = "apps.gradio.textual_inversion"
 
-GCP_AI_PLATFORM_TRAINING_ARGS = {
+TRAINING_CUSTOM_ARGS = {
     vertex_const.ENABLE_VERTEX_KEY: True,
     vertex_const.VERTEX_REGION_KEY: GOOGLE_CLOUD_REGION,
     vertex_training_const.TRAINING_ARGS_KEY: {
@@ -45,7 +43,7 @@ GCP_AI_PLATFORM_TRAINING_ARGS = {
         "worker_pool_specs": [
             {
                 "machine_spec": {
-                    "machine_type": "n1-standard-4",
+                    "machine_type": "a2-highgpu-1g",
                     "accelerator_type": "NVIDIA_TESLA_A100",
                     "accelerator_count": 1,
                 },
@@ -57,6 +55,11 @@ GCP_AI_PLATFORM_TRAINING_ARGS = {
         ],
     },
     "use_gpu": True,
+    "hyperparameters": {
+        "epoch": TRAINING_EPOCH,
+        "initialized_target_token": INITIALIZED_TARGET_TOKEN,
+        "placeholder_token": PLACEHOLDER_TOKEN
+    }
 }
 
 HF_PUSHER_ARGS = {
@@ -64,6 +67,9 @@ HF_PUSHER_ARGS = {
     "access_token": "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",
     "repo_name": PIPELINE_NAME,
     "space_config": {
-        "app_path": "apps.gradio.textual_inversion",
+        "app_path": GRADIO_APP_PATH,
+        "additional_replacements": {
+            "$PLACEHOLDER_TOKEN": PLACEHOLDER_TOKEN
+        }
     },
 }

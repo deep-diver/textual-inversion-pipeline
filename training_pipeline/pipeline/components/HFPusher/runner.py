@@ -84,6 +84,7 @@ def _replace_placeholders(
     model_repo_id: str,
     model_repo_url: str,
     model_version: str,
+    additional_replacements: Optional[Dict[str, str]]
 ):
     """set placeholder_to_replace before calling _replace_placeholde
     rs_in_files function"""
@@ -100,6 +101,8 @@ def _replace_placeholders(
         placeholders[_MODEL_URL_KEY]: model_repo_url,
         placeholders[_MODEL_VERSION_KEY]: model_version,
     }
+    if additional_replacements is not None:
+        placeholder_to_replace = {**placeholder_to_replace, **additional_replacements}
     _replace_placeholders_in_files(target_dir, placeholder_to_replace)
 
 
@@ -305,6 +308,7 @@ def deploy_model_for_hf_hub(
             model_repo_id=model_repo_id,
             model_repo_url=model_repo_url,
             model_version=model_version,
+            additional_replacements=space_config["additional_replacements"]
         )
 
         # step 2-4

@@ -1,6 +1,7 @@
 import argparse
 import os
 import glob
+import mimetypes
 
 import numpy as np
 import tensorflow as tf
@@ -8,9 +9,11 @@ from tensorflow import keras
 import tqdm
 from PIL import Image
 
-def load_dataset(directory="training_pipeline/data", extension="jpeg"):
-    files = glob.glob(f"{directory}/*.{extension}")
-    images = [keras.utils.load_img(img) for img in files]
+def load_dataset(directory="training_pipeline/data"):
+    files = glob.glob(f"{directory}/*.*")
+
+    images = [img for img in files if mimetypes.guess_type(img)[0] is not None and "image" in mimetypes.guess_type(img)[0]]
+    images = [keras.utils.load_img(img) for img in images]
 
     return images
 
@@ -18,6 +21,7 @@ def load_dataset(directory="training_pipeline/data", extension="jpeg"):
 def resize_img(image: tf.Tensor, resize: int) -> tf.Tensor:
     resize = keras.layers.Resizing(height=512, width=512, crop_to_aspect_ratio=True)
     image = np.array(resize(image))
+    image = image / 127.5 - 1
     return image
 
 

@@ -122,14 +122,6 @@ css = """
         .image_duplication{position: absolute; width: 100px; left: 50px}
 """
 
-
-examples = [
-    ["Yoda", "low quality", 40],
-    ["A red pokemon with green eyes", 40],
-    ["cute Sundar Pihcai creature", 40],
-    ["Hello kitty", 40],
-]
-
-num_images_to_gen = 3
+num_images_to_gen = 2
 
 img_height = img_width = 512
