@@ -1,6 +1,6 @@
 pytest
-tfx==1.11.0
-tensorflow==2.11.0
+tfx==1.11
+tensorflow==2.11
 keras_cv==0.4.0
 tensorflow_datasets==4.8.1
 kfp
