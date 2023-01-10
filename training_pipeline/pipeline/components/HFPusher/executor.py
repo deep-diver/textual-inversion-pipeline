@@ -108,11 +108,15 @@ class Executor(tfx_pusher_executor.Executor):
         if space_config is not None:
             space_config = ast.literal_eval(space_config)
 
+        additional_config = exec_properties.get(_ADDITIONAL_CONFIGS_KEY, None)
+        if additional_config is not None:
+            additional_config = ast.literal_eval(additional_config)
+
         pushed_properties = runner.deploy_model_for_hf_hub(
             username=exec_properties.get(_USERNAME_KEY, None),
             access_token=exec_properties.get(_ACCESS_TOKEN_KEY, None),
             repo_name=exec_properties.get(_REPO_NAME_KEY, None),
-            additional_configs=exec_properties.get(_ADDITIONAL_CONFIGS_KEY, None),
+            additional_configs=additional_config,
             space_config=space_config,
             model_path=model_path,
             model_version=model_version_name,
