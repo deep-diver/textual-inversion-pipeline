@@ -130,16 +130,21 @@ def _replace_files(src_paths, dst_path):
                 tf.io.gfile.remove(content)
 
     for src_path in src_paths:
-        inside_root_src_path = tf.io.gfile.listdir(src_path)
+        try:
+            inside_root_src_path = tf.io.gfile.listdir(src_path)
 
-        for content_name in inside_root_src_path:
-            content = f"{src_path}/{content_name}"
-            dst_content = f"{dst_path}/{content_name}"
+            for content_name in inside_root_src_path:
+                content = f"{src_path}/{content_name}"
+                dst_content = f"{dst_path}/{content_name}"
 
-            if tf.io.gfile.isdir(content):
-                io_utils.copy_dir(content, dst_content)
-            else:
-                tf.io.gfile.copy(content, dst_content)
+                if tf.io.gfile.isdir(content):
+                    io_utils.copy_dir(content, dst_content)
+                else:
+                    tf.io.gfile.copy(content, dst_content)
+
+        except tf.errors.NotFoundError as e:
+            logging.warning(f"Path not found: {src_path}")
+
 
 
 def _create_remote_repo(
@@ -259,7 +264,9 @@ def deploy_model_for_hf_hub(
     paths_to_copy = [model_path]
     if additional_configs is not None and \
         additional_configs['additional_resources_path'] is not None:
-        paths_to_copy.append(additional_configs['additional_resources_path'])
+        additional_resources_path = additional_configs['additional_resources_path']
+        additional_resources_path = additional_resources_path.replace(".", "/")
+        paths_to_copy.append(additional_resources_path)
 
     _replace_files(paths_to_copy, local_path)
     logging.info(
