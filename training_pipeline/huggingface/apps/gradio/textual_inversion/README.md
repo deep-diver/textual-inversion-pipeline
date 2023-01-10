@@ -1,6 +1,6 @@
 ---
-title: Textual Inversion
-emoji: 🐶
+title: Textual Inversion w/ My Cat
+emoji: 😼
 colorFrom: indigo
 colorTo: indigo
 sdk: gradio
