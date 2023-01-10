@@ -68,11 +68,11 @@ HF_PUSHER_ARGS = {
     "access_token": "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",
     "repo_name": PIPELINE_NAME,
     "additional_configs": {
-        "additional_resources_path": ADDITIONAL_RESOURCES_PATH
+        "additional_resources_path": ADDITIONAL_RESOURCES_PATH,
         "additional_replacements": {
             "$PLACEHOLDER_TOKEN": PLACEHOLDER_TOKEN
         }
-    }
+    },
     "space_config": {
         "app_path": GRADIO_APP_PATH,
         "additional_replacements": {
