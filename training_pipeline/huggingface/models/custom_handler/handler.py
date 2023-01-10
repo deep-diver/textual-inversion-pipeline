@@ -14,7 +14,7 @@ class EndpointHandler():
 
         sd._text_encoder = tf.saved_model.load(path)
         sd._text_encoder.compile(jit_compile=True)
-        sd.tokenizer.add_tokens($PLACEHOLDER_TOKEN)        
+        sd.tokenizer.add_tokens("$PLACEHOLDER_TOKEN")
     
     def __call__(self, data: Dict[str, Any]) -> str:
         prompt = data.pop("inputs", data)
