@@ -105,7 +105,7 @@ def _replace_placeholders(
         placeholders[_MODEL_REPO_KEY]: model_repo_id,
         placeholders[_MODEL_URL_KEY]: model_repo_url,
         placeholders[_MODEL_VERSION_KEY]: model_version,
-        placeholders[__MODEL_VERSION_SHA_KEY]: model_version_sha
+        placeholders[_MODEL_VERSION_SHA_KEY]: model_version_sha
     }
     if additional_replacements is not None:
         placeholder_to_replace = {**placeholder_to_replace, **additional_replacements}
