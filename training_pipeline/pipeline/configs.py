@@ -17,7 +17,7 @@ except ImportError:
 
 GOOGLE_CLOUD_REGION = "us-central1"
 
-DATA_PATH = f"gs://sd-textual-inversion/{PIPELINE_NAME}/"
+DATA_PATH = "tfrecords"
 SCHEMA_PATH = "pipeline/schema.pbtxt" # GCS path is also allowed
 
 GCS_BUCKET_NAME = GOOGLE_CLOUD_PROJECT + "-complete-mlops"
