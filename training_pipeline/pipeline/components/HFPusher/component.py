@@ -37,6 +37,7 @@ class HFPusherSpec(types.ComponentSpec):
         "access_token": ExecutionParameter(type=str),
         "repo_name": ExecutionParameter(type=str),
         "space_config": ExecutionParameter(type=Dict[Text, Any], optional=True),
+        "additional_configs": ExecutionParameter(type=Dict[Text, Any], optional=True),
     }
     INPUTS = {
         MODEL_KEY: ChannelParameter(type=standard_artifacts.Model, optional=True),
@@ -69,6 +70,7 @@ class HFPusher(base_component.BaseComponent):
         access_token: str,
         repo_name: str,
         space_config: Optional[Dict[Text, Any]] = None,
+        additional_configs: Optional[Dict[Text, Any]] = None,
         model: Optional[types.Channel] = None,
         model_blessing: Optional[types.Channel] = None,
     ):
@@ -157,6 +159,7 @@ class HFPusher(base_component.BaseComponent):
             access_token=access_token,
             repo_name=repo_name,
             space_config=space_config,
+            additional_configs=additional_configs,
             model=model,
             model_blessing=model_blessing,
             pushed_model=pushed_model,
