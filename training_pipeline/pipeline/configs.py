@@ -29,7 +29,7 @@ PIPELINE_ROOT = os.path.join(OUTPUT_DIR, "tfx_pipeline_output", PIPELINE_NAME)
 TRAINING_FN = "models.train.run_fn"
 PREPROCESSING_FN = "dataprocessings.preprocessing.preprocessing_fn"
 
-TRAINING_EPOCH = 50
+TRAINING_EPOCH = 1
 INITIALIZED_TARGET_TOKEN = "cat"
 PLACEHOLDER_TOKEN = "<my-cat-token>"
 
