@@ -31,10 +31,12 @@ from requests.exceptions import HTTPError
 _MODEL_REPO_KEY = "MODEL_REPO_ID"
 _MODEL_URL_KEY = "MODEL_REPO_URL"
 _MODEL_VERSION_KEY = "MODEL_VERSION"
+_MODEL_VERSION_SHA_KEY = "MODEL_VERSION_SHA"
 
 _DEFAULT_MODEL_REPO_PLACEHOLDER_KEY = "$MODEL_REPO_ID"
 _DEFAULT_MODEL_URL_PLACEHOLDER_KEY = "$MODEL_REPO_URL"
 _DEFAULT_MODEL_VERSION_PLACEHOLDER_KEY = "$MODEL_VERSION"
+_DEFAULT_MODEL_VERSION_SHA_PLACEHOLDER_KEY = "$MODEL_VERSION_SHA"
 
 def _is_text_file(path):
     mimetype = mimetypes.guess_type(path)
@@ -84,6 +86,7 @@ def _replace_placeholders(
     model_repo_id: str,
     model_repo_url: str,
     model_version: str,
+    model_version_sha: str,
     additional_replacements: Optional[Dict[str, str]]
 ):
     """set placeholder_to_replace before calling _replace_placeholde
@@ -94,12 +97,14 @@ def _replace_placeholders(
             _MODEL_REPO_KEY: _DEFAULT_MODEL_REPO_PLACEHOLDER_KEY,
             _MODEL_URL_KEY: _DEFAULT_MODEL_URL_PLACEHOLDER_KEY,
             _MODEL_VERSION_KEY: _DEFAULT_MODEL_VERSION_PLACEHOLDER_KEY,
+            _MODEL_VERSION_SHA_KEY: _DEFAULT_MODEL_VERSION_SHA_PLACEHOLDER_KEY,
         }
 
     placeholder_to_replace = {
         placeholders[_MODEL_REPO_KEY]: model_repo_id,
         placeholders[_MODEL_URL_KEY]: model_repo_url,
         placeholders[_MODEL_VERSION_KEY]: model_version,
+        placeholders[__MODEL_VERSION_SHA_KEY]: model_version_sha
     }
     if additional_replacements is not None:
         placeholder_to_replace = {**placeholder_to_replace, **additional_replacements}
@@ -308,6 +313,7 @@ def deploy_model_for_hf_hub(
             model_repo_id=model_repo_id,
             model_repo_url=model_repo_url,
             model_version=model_version,
+            model_version_sha=outputs["commit_id"],
             additional_replacements=space_config["additional_replacements"]
         )
 
