@@ -72,9 +72,10 @@ def _replace_placeholders_in_file(
             source_code = f.read()
 
         for placeholder in placeholder_to_replace:
-            source_code = source_code.replace(
-                placeholder, placeholder_to_replace[placeholder]
-            )
+            if placeholder_to_replace[placeholder] is not None:
+                source_code = source_code.replace(
+                    placeholder, placeholder_to_replace[placeholder]
+                )
 
         with tf.io.gfile.GFile(filepath, "w") as f:
             f.write(source_code)
@@ -190,6 +191,7 @@ def deploy_model_for_hf_hub(
     repo_name: str,
     model_path: str,
     model_version: str,
+    additional_configs: Optional[Dict[Text, Any]] = None,
     space_config: Optional[Dict[Text, Any]] = None,
 ) -> Dict[str, str]:
     """Executes ML model deployment workflow to HuggingFace Hub. Refer to the
@@ -254,10 +256,27 @@ def deploy_model_for_hf_hub(
     )
 
     # step 1-3
-    _replace_files([model_path], local_path)
+    paths_to_copy = [model_path]
+    if additional_configs is not None and \
+        additional_configs['additional_resources_path'] is not None:
+        paths_to_copy.append(additional_configs['additional_resources_path'])
+
+    _replace_files(paths_to_copy, local_path)
     logging.info(
         "current version of the model is copied to the cloned local repository"
     )
+
+    if additional_configs is not None and \
+        additional_configs['additional_replacements'] is not None:
+        _replace_placeholders(
+            target_dir=local_path,
+            placeholders=None,
+            model_repo_id=None,
+            model_repo_url=None,
+            model_version=None,
+            model_version_sha=None,
+            additional_replacements=additional_configs["additional_replacements"]
+        )    
 
     # step 1-4
     _push_to_remote_repo(

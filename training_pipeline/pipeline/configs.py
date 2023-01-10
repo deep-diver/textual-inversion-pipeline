@@ -33,7 +33,8 @@ TRAINING_EPOCH = 50
 INITIALIZED_TARGET_TOKEN = "cat"
 PLACEHOLDER_TOKEN = "<my-funny-cat-token>"
 
-GRADIO_APP_PATH = "apps.gradio.textual_inversion"
+GRADIO_APP_PATH = "huggingface.apps.gradio.textual_inversion"
+ADDITIONAL_RESOURCES_PATH = "huggingface.models.custom_handler"
 
 TRAINING_CUSTOM_ARGS = {
     vertex_const.ENABLE_VERTEX_KEY: True,
@@ -66,6 +67,12 @@ HF_PUSHER_ARGS = {
     "username": "chansung",
     "access_token": "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",
     "repo_name": PIPELINE_NAME,
+    "additional_configs": {
+        "additional_resources_path": ADDITIONAL_RESOURCES_PATH
+        "additional_replacements": {
+            "$PLACEHOLDER_TOKEN": PLACEHOLDER_TOKEN
+        }
+    }
     "space_config": {
         "app_path": GRADIO_APP_PATH,
         "additional_replacements": {
