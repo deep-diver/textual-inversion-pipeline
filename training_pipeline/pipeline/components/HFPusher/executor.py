@@ -112,7 +112,7 @@ class Executor(tfx_pusher_executor.Executor):
             username=exec_properties.get(_USERNAME_KEY, None),
             access_token=exec_properties.get(_ACCESS_TOKEN_KEY, None),
             repo_name=exec_properties.get(_REPO_NAME_KEY, None),
-            additional_configs=exec_properties.get(_ADDITIONAL_CONFIGS_KEY, None)
+            additional_configs=exec_properties.get(_ADDITIONAL_CONFIGS_KEY, None),
             space_config=space_config,
             model_path=model_path,
             model_version=model_version_name,
