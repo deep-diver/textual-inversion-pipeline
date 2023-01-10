@@ -130,7 +130,7 @@ def update_compute_options(provider, region):
 
 with gr.Blocks() as hf_endpoint:
     providers = avaliable_providers()
-    head_sha = "$MODEL_VERSION_SHA"
+    head_sha = "$SHA"
 
     gr.Markdown(
     """
