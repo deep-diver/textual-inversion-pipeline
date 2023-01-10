@@ -65,47 +65,217 @@ demoInterface = gr.Interface(
     allow_flagging=False,
 )
 
-with gr.Blocks() as demo:
+
+def avaliable_providers():
+    providers = []
+    
+    headers = {
+        "Content-Type": "application/json",
+    }
+    endpoint_url = "https://api.endpoints.huggingface.cloud/provider"
+    response = requests.get(endpoint_url, headers=headers)
+
+    for provider in response.json()['items']:
+        if provider['status'] == 'available':
+            providers.append(provider['vendor'])
+    
+    return providers
+
+def update_regions(provider):
+    avalialbe_regions = []
+    
+    headers = {
+        "Content-Type": "application/json",
+    }
+    endpoint_url = f"https://api.endpoints.huggingface.cloud/provider/{provider}/region"
+    response = requests.get(endpoint_url, headers=headers)
+
+    for region in response.json()['items']:
+        if region['status'] == 'available':
+            avalialbe_regions.append(f"{region['region']}/{region['label']}")
+
+    return gr.Dropdown.update(
+        choices=avalialbe_regions,
+        value=avalialbe_regions[0] if len(avalialbe_regions) > 0 else None
+    )
+
+def update_compute_options(provider, region):
+    region = region.split("/")[0]
+    avalialbe_compute_options = []
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+    endpoint_url = f"https://api.endpoints.huggingface.cloud/provider/{provider}/region/{region}/compute"
+    print(endpoint_url)
+    response = requests.get(endpoint_url, headers=headers)
+
+    for compute in response.json()['items']:
+        if compute['status'] == 'available':
+            accelerator = compute['accelerator']
+            numAccelerators = compute['numAccelerators']
+            memoryGb = compute['memoryGb'].replace("Gi", "GB")
+            architecture = compute['architecture']
+            
+            type = f"{numAccelerators}vCPU {memoryGb} · {architecture}" if accelerator == "cpu" else f"{numAccelerators}x {architecture}"
+            
+            avalialbe_compute_options.append(
+                f"{compute['accelerator'].upper()} [{compute['instanceSize']}] · {type}"
+            )
+
+    return gr.Dropdown.update(
+        choices=avalialbe_compute_options,
+        value=avalialbe_compute_options[0] if len(avalialbe_compute_options) > 0 else None
+    )
+
+with gr.Blocks() as hf_endpoint:
+    providers = avaliable_providers()
+    head_sha = "$MODEL_VERSION_SHA"
+
     gr.Markdown(
     """
-    # Your own Stable Diffusion on Google Cloud Platform
+    ## Deploy Stable Diffusion on 🤗 Endpoint
+    ---
     """)
     
-    with gr.Row():
-        gcp_project_id = gr.Textbox(
-            label="GCP project ID",
-        )
-        gcp_region = gr.Dropdown(
-            ["us-central1", "asia‑east1", "asia-northeast1"],
-            value="us-central1",
-            interactive=True,
-            label="GCP Region"
-        )
-
-    gr.Markdown(
-    """
-    Configurations on scalability
-    """)        
-    with gr.Row():
-        min_nodes = gr.Slider(
-            label="minimum number of nodes",
-            minimum=1,
-            maximum=10)
-        
-        max_nodes = gr.Slider(
-            label="maximum number of nodes",
-            minimum=1,
-            maximum=10)
+    gr.Markdown("""
     
-    btn = gr.Button(value="Ready to Deploy!")
-    # btn.click(mirror, inputs=[im], outputs=[im_2])    
+    #### Your 🤗 Access Token
+    """)
+    hf_token_input = gr.Textbox(
+        show_label=False
+    )
 
-with gr.Blocks() as demo2:
-    gr.Markdown(
-    """
-    # Your own Stable Diffusion on Hugging Face 🤗 Endpoint
+    gr.Markdown("""    
+    #### Decide the Endpoint name
+    """)
+    endpoint_name_input = gr.Textbox(
+        show_label=False
+    )    
+
+    with gr.Row():
+        gr.Markdown("""    
+        #### Cloud Provider
+        """)
+
+        gr.Markdown("""    
+        #### Cloud Region
+        """)       
+    
+    with gr.Row():
+        provider_selector = gr.Dropdown(
+            choices=providers,
+            interactive=True,
+            show_label=False,
+        )
+        
+        region_selector = gr.Dropdown(
+            [],
+            value="",
+            interactive=True,
+            show_label=False,
+        )
+        
+        provider_selector.change(update_regions, inputs=provider_selector, outputs=region_selector)
+
+    with gr.Row():
+        gr.Markdown("""    
+        #### Target Model
+        """)
+
+        gr.Markdown("""    
+        #### Target Model Version(branch)
+        """)       
+    
+    with gr.Row():
+        repository_selector = gr.Textbox(
+            value="$MODEL_REPO_ID",
+            interactive=False,
+            show_label=False,
+        )
+
+        repository_selector = gr.Textbox(
+            value=f"$MODEL_VERSION/{head_sha[:7]}",
+            interactive=False,
+            show_label=False,
+        )        
+
+    with gr.Row():
+        gr.Markdown("""    
+        #### Task
+        """)
+
+        gr.Markdown("""    
+        #### Framework
+        """)      
+    
+    with gr.Row():
+        task_selector = gr.Textbox(
+            value="Custom",
+            interactive=False,
+            show_label=False,
+        )
+
+        framework_selector = gr.Textbox(
+            value="TensorFlow",
+            interactive=False,
+            show_label=False,
+        )
+
+    gr.Markdown("""
+    
+    #### Select Compute Instance Type
     """)    
+    compute_selector = gr.Dropdown(
+        [],
+        value="",
+        interactive=True,
+        show_label=False,
+    )
+    region_selector.change(update_compute_options, inputs=[provider_selector, region_selector], outputs=compute_selector)
+
+    with gr.Row():
+        gr.Markdown("""    
+        #### Min Number of Nodes
+        """)
+
+        gr.Markdown("""    
+        #### Max Number of Nodes
+        """)
+
+        gr.Markdown("""    
+        #### Security Level
+        """)        
+    
+    with gr.Row():
+        min_node_selector = gr.Number(
+            value=1,
+            interactive=True,
+            show_label=False,
+        )
+
+        max_node_selector = gr.Number(
+            value=1,
+            interactive=True,
+            show_label=False,
+        )
+
+        security_selector = gr.Radio(
+            choices=["Protected", "Public", "Private"],
+            value="Public",
+            interactive=True,
+            show_label=False,
+        )
+    
+    submit_button = gr.Button(
+        value="Submit",
+    )
+
+    status_txt = gr.Textbox(
+        value="any status update will be displayed here",
+        interactive=False
+    )
 
 gr.TabbedInterface(
-    [demoInterface, demo, demo2], ["Try-out", "🚀 Deploy on GCP", " Deploy on 🤗 Endpoint"]
+    [demoInterface, hf_endpoint], ["Try-out", " Deploy on 🤗 Endpoint"]
 ).launch(enable_queue=True)
