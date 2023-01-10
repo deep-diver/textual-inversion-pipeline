@@ -5,6 +5,7 @@ Adapted from https://huggingface.co/spaces/stabilityai/stable-diffusion
 from tensorflow import keras
 
 import time
+import requests
 
 import gradio as gr
 import keras_cv
