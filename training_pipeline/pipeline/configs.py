@@ -31,7 +31,7 @@ PREPROCESSING_FN = "dataprocessings.preprocessing.preprocessing_fn"
 
 TRAINING_EPOCH = 50
 INITIALIZED_TARGET_TOKEN = "cat"
-PLACEHOLDER_TOKEN = "<my-funny-cat-token>"
+PLACEHOLDER_TOKEN = "<my-cat-token>"
 
 GRADIO_APP_PATH = "huggingface.apps.gradio.textual_inversion"
 ADDITIONAL_RESOURCES_PATH = "huggingface.models.custom_handler"
