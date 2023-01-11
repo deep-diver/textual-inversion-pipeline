@@ -2,3 +2,4 @@
 __pycache__
 tfx_pipeline_output
 tfx_metadata
+.DS_Store
