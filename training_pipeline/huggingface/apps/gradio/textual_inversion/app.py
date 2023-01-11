@@ -5,6 +5,7 @@ Adapted from https://huggingface.co/spaces/stabilityai/stable-diffusion
 from tensorflow import keras
 
 import time
+import json
 import requests
 
 import gradio as gr
@@ -19,6 +20,8 @@ PLACEHOLDER_TOKEN="$PLACEHOLDER_TOKEN"
 
 MODEL_CKPT = "$MODEL_REPO_ID@$MODEL_VERSION"
 MODEL = from_pretrained_keras(MODEL_CKPT)
+
+head_sha = "$SHA"
 
 model = keras_cv.models.StableDiffusion(
     img_width=img_width, img_height=img_height, jit_compile=True
@@ -131,9 +134,83 @@ def update_compute_options(provider, region):
         value=avalialbe_compute_options[0] if len(avalialbe_compute_options) > 0 else None
     )
 
+def submit(
+    hf_token_input,
+    endpoint_name_input,
+    provider_selector,
+    region_selector,
+    repository_selector,
+    task_selector,
+    framework_selector,
+    compute_selector,
+    min_node_selector, 
+    max_node_selector, 
+    security_selector    
+):
+    compute_resources = compute_selector.split("·")
+    accelerator = compute_resources[0][:3].strip()
+
+    size_l_index = compute_resources[0].index("[") - 1
+    size_r_index = compute_resources[0].index("]")
+    size = compute_resources[0][size_l_index : size_r_index].strip()
+
+    type = compute_resources[-1].strip()
+    
+    payload = {
+      "accountId": repository_selector.split("/")[0],
+      "compute": {
+        "accelerator": accelerator.lower(),
+        "instanceSize": size[1:],
+        "instanceType": type,
+        "scaling": {
+          "maxReplica": int(max_node_selector),
+          "minReplica": int(min_node_selector)
+        }
+      },
+      "model": {
+        "framework": framework_selector.lower(),
+        "image": {
+          "huggingface": {}
+        },
+        "repository": repository_selector.lower(),
+        "revision": head_sha,
+        "task": task_selector.lower()
+      },
+      "name": endpoint_name_input.strip(),
+      "provider": {
+        "region": region_selector.split("/")[0].lower(),
+        "vendor": provider_selector.lower()
+      },
+      "type": security_selector.lower()
+    }
+    
+    print(payload)
+
+    payload = json.dumps(payload)
+    print(payload)
+
+    headers = {
+        "Authorization": f"Bearer {hf_token_input.strip()}",
+        "Content-Type": "application/json",
+    }
+    endpoint_url = f"https://api.endpoints.huggingface.cloud/endpoint"
+    print(endpoint_url)
+
+    response = requests.post(endpoint_url, headers=headers, data=payload)
+
+    if response.status_code == 400:
+        return f"{response.text}. Malformed data in {payload}"
+    elif response.status_code == 401:
+        return "Invalid token"
+    elif response.status_code == 409:
+        return f"Endpoint {endpoint_name_input} already exists"
+    elif response.status_code == 202:
+        return f"Endpoint {endpoint_name_input} created successfully on {provider_selector.lower()} using {repository_selector.lower()}@{head_sha}.\nPlease check out the progress at https://ui.endpoints.huggingface.co/endpoints."
+    else:
+        return f"something went wrong {response.status_code} = {response.text}"
+
 with gr.Blocks() as hf_endpoint:
     providers = avaliable_providers()
-    head_sha = "$SHA"
 
     gr.Markdown(
     """
@@ -146,7 +223,8 @@ with gr.Blocks() as hf_endpoint:
     #### Your 🤗 Access Token
     """)
     hf_token_input = gr.Textbox(
-        show_label=False
+        show_label=False,
+        type="password"
     )
 
     gr.Markdown("""    
@@ -197,7 +275,7 @@ with gr.Blocks() as hf_endpoint:
             show_label=False,
         )
 
-        repository_selector = gr.Textbox(
+        revision_selector = gr.Textbox(
             value=f"$MODEL_VERSION/{head_sha[:7]}",
             interactive=False,
             show_label=False,
@@ -279,6 +357,22 @@ with gr.Blocks() as hf_endpoint:
         interactive=False
     )
 
+    submit_button.click(
+        submit, 
+        inputs=[
+            hf_token_input,
+            endpoint_name_input,
+            provider_selector,
+            region_selector,
+            repository_selector,
+            task_selector,
+            framework_selector,
+            compute_selector,
+            min_node_selector, 
+            max_node_selector, 
+            security_selector],
+        outputs=status_txt)
+
 gr.TabbedInterface(
-    [demoInterface, hf_endpoint], ["Try-out", " Deploy on 🤗 Endpoint"]
+    [demoInterface, hf_endpoint], ["Playground", " Deploy on 🤗 Endpoint"]
 ).launch(enable_queue=True)
