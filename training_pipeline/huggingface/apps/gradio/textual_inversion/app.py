@@ -122,11 +122,12 @@ def update_compute_options(provider, region):
             numAccelerators = compute['numAccelerators']
             memoryGb = compute['memoryGb'].replace("Gi", "GB")
             architecture = compute['architecture']
+            instanceType = compute['instanceType']
             
             type = f"{numAccelerators}vCPU {memoryGb} · {architecture}" if accelerator == "cpu" else f"{numAccelerators}x {architecture}"
             
             avalialbe_compute_options.append(
-                f"{compute['accelerator'].upper()} [{compute['instanceSize']}] · {type}"
+                f"{compute['accelerator'].upper()} [{compute['instanceSize']}] · {type} · {instanceType}"
             )
 
     return gr.Dropdown.update(
