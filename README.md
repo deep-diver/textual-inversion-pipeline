@@ -6,7 +6,7 @@ This repository demonstrates how to manage multiple models and their prototype a
 
 ## Overview
 
-![](https://i.ibb.co/gryRfqM/Screen-Shot-2023-01-12-at-12-34-58-AM.png)
+![](assets/overview.png)
 
 In this section, I am going to explain the whole workflow and how to use it. There are some parts that need to be done manually, and there are some parts that are done automatically, so I will indicate each cases with the letter **[M]** and **[A]**.
 
@@ -27,7 +27,7 @@ In this section, I am going to explain the whole workflow and how to use it. The
       - `HF_ACCESS_TOKEN`: the value of this Secret should be the Hugging Face Access token.
 
 <p align="center">
-  <img width="40%" src="https://i.ibb.co/sss3sjw/Screen-Shot-2023-01-12-at-12-57-06-AM.png" />
+  <img width="40%" src="assets/gh_action_trigger.png"/>
 </p>
 
 8. **[A]** `Trigger Training Pipeline` GitHub Action workflow is triggered, and it does the following jobs.
@@ -39,7 +39,7 @@ In this section, I am going to explain the whole workflow and how to use it. The
     - run TFX pipeline on Vertex AI platform in GCP.
 
 <p align="center">
-  <img width="70%" src="https://i.ibb.co/rMzvpKt/Screen-Shot-2023-01-12-at-1-43-35-AM.png" />
+  <img width="70%" src="assets/gh_action_running.png" />
 </p>
 
 9. **[A]** TFX pipeline on Vertex AI handles the following jobs in a row.
@@ -51,19 +51,19 @@ In this section, I am going to explain the whole workflow and how to use it. The
         - some special strings inside files in `training_pipeline/huggingface/models/custom_handler` and `training_pipeline/hugging_face/apps/gradio/textual_inversion` will be replaced at runtime such as the model repository name, model version(branch name), commit SHA, and unique placeholder token.
 
 <p align="center">
-  <img width="70%" src="https://i.ibb.co/JC4m0tL/Screen-Shot-2023-01-12-at-1-45-26-AM.png" />
+  <img width="70%" src="assets/pipeline_running.png" />
 </p>
 
 10. **[M]** Change the Hardware spec of the Hugging Face Space to `T4 small` since Stable Diffusion can not be run on CPU instance.
 
 <p align="center">
-  <img width="70%" src="https://i.ibb.co/GMpw5Ch/Screen-Shot-2023-01-12-at-1-49-38-AM.png" />
+  <img width="70%" src="assets/hardware_selection.png" />
 </p>
 
 11. **[M]** Play with the app under `Playground` tab.
 
 <p align="center">
-  <img width="70%" src="https://i.ibb.co/8X04r0L/Screen-Shot-2023-01-11-at-11-48-51-PM.png" />
+  <img width="70%" src="assets/playground.png" />
 </p>
 
 12. **[M]** Deploy the Stable Diffusion with the current version of `text_encoder` on Hugging Face Inference Endpoint under `Deploy on 🤗 Endpoint` tab. 
@@ -71,7 +71,7 @@ In this section, I am going to explain the whole workflow and how to use it. The
     - After clicking `Submit` button, check out the Endpoint creation progress via `https://ui.endpoints.huggingface.co/endpoints`.
 
 <p align="center">
-  <img width="70%" src="https://i.ibb.co/BsqFyFN/Screen-Shot-2023-01-12-at-1-47-30-AM.png" />
+  <img width="70%" src="assets/deployment.png" />
 </p>
 
 ## Tech Stack
