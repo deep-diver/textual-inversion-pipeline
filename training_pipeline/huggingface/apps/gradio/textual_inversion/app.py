@@ -381,6 +381,46 @@ with gr.Blocks() as hf_endpoint:
             security_selector],
         outputs=status_txt)
 
+    gr.Markdown("""    
+    #### Pricing Table(CPU) - 2023/1/11
+    """)
+
+    gr.Dataframe(
+        headers=["provider", "size", "$/h", "vCPUs", "Memory", "Architecture"],
+        datatype=["str", "str", "str", "number", "str", "str"],
+        row_count=8,
+        col_count=(6, "fixed"),
+        value=[
+            ["aws", "small", "$0.06", 1, "2GB", "Intel Xeon - Ice Lake"],
+            ["aws", "medium", "$0.12", 2, "4GB", "Intel Xeon - Ice Lake"],
+            ["aws", "large", "$0.24", 4, "8GB", "Intel Xeon - Ice Lake"],
+            ["aws", "xlarge", "$0.48", 8, "16GB", "Intel Xeon - Ice Lake"],
+            ["azure", "small", "$0.06", 1, "2GB", "Intel Xeon"],
+            ["azure", "medium", "$0.12", 2, "4GB", "Intel Xeon"],
+            ["azure", "large", "$0.24", 4, "8GB", "Intel Xeon"],
+            ["azure", "xlarge", "$0.48", 8, "16GB", "Intel Xeon"],
+        ]
+    )
+
+    gr.Markdown("""    
+    #### Pricing Table(GPU) - 2023/1/11
+    """)    
+
+    gr.Dataframe(
+        headers=["provider", "size", "$/h", "GPUs", "Memory", "Architecture"],
+        datatype=["str", "str", "str", "number", "str", "str"],
+        row_count=6,
+        col_count=(6, "fixed"),
+        value=[
+            ["aws", "small", "$0.60", 1, "14GB", "NVIDIA T4"],
+            ["aws", "medium", "$1.30", 1, "24GB", "NVIDIA A10G"],
+            ["aws", "large", "$4.50", 4, "156B", "NVIDIA T4"],
+            ["aws", "xlarge", "$6.50", 1, "80GB", "NVIDIA A100"],
+            ["aws", "xxlarge", "$7.00", 4, "96GB", "NVIDIA A10G"],
+            ["aws", "xxxlarge", "$45.0", 8, "640GB", "NVIDIA A100"],
+        ]
+    )        
+
 gr.TabbedInterface(
     [demoInterface, hf_endpoint], ["Playground", " Deploy on 🤗 Endpoint"]
 ).launch(enable_queue=True)
