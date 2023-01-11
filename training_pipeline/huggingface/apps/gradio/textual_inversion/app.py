@@ -135,6 +135,7 @@ def update_compute_options(provider, region):
     )
 
 def submit(
+    hf_account_input,
     hf_token_input,
     endpoint_name_input,
     provider_selector,
@@ -157,7 +158,7 @@ def submit(
     type = compute_resources[-1].strip()
     
     payload = {
-      "accountId": repository_selector.split("/")[0],
+      "accountId": hf_account_input.strip(),
       "compute": {
         "accelerator": accelerator.lower(),
         "instanceSize": size[1:],
@@ -219,7 +220,13 @@ with gr.Blocks() as hf_endpoint:
     """)
     
     gr.Markdown("""
-    
+    #### Your 🤗 Account ID(Name)
+    """)
+    hf_account_input = gr.Textbox(
+        show_label=False,
+    )
+
+    gr.Markdown("""
     #### Your 🤗 Access Token
     """)
     hf_token_input = gr.Textbox(
@@ -360,6 +367,7 @@ with gr.Blocks() as hf_endpoint:
     submit_button.click(
         submit, 
         inputs=[
+            hf_account_input,
             hf_token_input,
             endpoint_name_input,
             provider_selector,
